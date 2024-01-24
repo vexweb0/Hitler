@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player with Dynamic Background Color</title>
+    <title>Skibidi Hitler</title>
     <style>
         body {
             margin: 0;
@@ -11,8 +11,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Hide overflow for scattered images */
-            transition: transform 0.2s ease, background-color 1s ease; /* Smooth transition for screen shake and background color change */
+            overflow: hidden;
+            transition: transform 0.2s ease, background-color 1s ease;
         }
 
         #audio-container {
@@ -24,47 +24,80 @@
             height: 150px;
             border-radius: 50%;
             margin-bottom: 20px;
-            border: 5px solid #3498db; /* Cool colorful border */
+            border: 5px solid #3498db;
             object-fit: cover;
+            transform: rotate(45deg); /* Rotate the cube */
+        }
+
+        .audio-cube {
+            position: relative;
+            display: inline-block;
+            perspective: 1000px;
+        }
+
+        .audio-cube-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotateCube 10s infinite linear;
+        }
+
+        .audio-cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #3498db;
+            opacity: 0.5;
+            border: 2px solid #2980b9;
+        }
+
+        @keyframes rotateCube {
+            from {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            to {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
         }
 
         #audio-player {
             width: 100%;
-            max-width: 500px; /* Adjust the max-width as needed */
+            max-width: 500px;
         }
 
-        /* Increase the size of audio controls */
         #audio-player::-webkit-media-controls {
             width: 100%;
-            max-width: 600px; /* Adjust the max-width as needed */
+            max-width: 600px;
         }
 
-        /* Additional styles for scattered images */
         .scattered-image {
             position: absolute;
-            width: 50px; /* Adjust the size of scattered images */
+            width: 50px;
             height: 50px;
             border-radius: 50%;
-            border: 2px solid #3498db; /* Cool colorful border */
+            border: 2px solid #3498db;
             object-fit: cover;
-            opacity: 0.7; /* Initial opacity */
-            transition: opacity 0.5s ease; /* Smooth transition for flickering effect */
+            opacity: 0.7;
+            transition: opacity 0.5s ease;
         }
 
-        /* Flickering effect class */
         .flicker {
             opacity: 0 !important;
         }
+
+        .audio-element {
+            margin: 10px 0; /* Added margin for spacing between audio elements */
+        }
+
+        /* Rest of your CSS remains unchanged */
     </style>
 </head>
 <body>
 
 <script>
     function changeBackgroundColor() {
-        // Generate a random color in hexadecimal format
         const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-
-        // Apply the random color to the body background
         document.body.style.backgroundColor = randomColor;
     }
 
@@ -83,16 +116,16 @@
         scatteredImages.push(image);
     }
 
-    function startFlickeringAndShaking() {
+    function startFlickeringAndShaking(element) {
         flickerInterval = setInterval(() => {
             const randomIndex = Math.floor(Math.random() * scatteredImages.length);
             const flickerImage = scatteredImages[randomIndex];
 
             flickerImage.classList.add("flicker");
             setTimeout(() => flickerImage.classList.remove("flicker"), 200);
-        }, 1000); // Flicker every second
+        }, 1000);
 
-        shakeInterval = setInterval(shakeScreen, 200); // Shake screen aggressively every 0.2 seconds
+        shakeInterval = setInterval(() => shakeScreen(element), 200);
     }
 
     function stopFlickeringAndShaking() {
@@ -101,41 +134,77 @@
         resetScreen();
     }
 
-    function shakeScreen() {
+    function shakeScreen(element) {
         const shakeMagnitude = 20;
         const shakeDirection = Math.random() > 0.5 ? 1 : -1;
         const translateY = shakeMagnitude * shakeDirection;
 
-        document.body.style.transform = `translateY(${translateY}px)`;
+        element.style.transform = `translateY(${translateY}px)`;
     }
 
     function resetScreen() {
         document.body.style.transform = 'translateY(0)';
     }
 
+    function playNextSong() {
+        stopFlickeringAndShaking();
+        currentSongIndex = (currentSongIndex + 1) % audioElements.length;
+        const nextAudio = audioElements[currentSongIndex];
+        startFlickeringAndShaking(nextAudio);
+        nextAudio.play();
+    }
+
     const scatteredImages = [];
     let shakeInterval, flickerInterval;
+    let currentSongIndex = 0;
+    const audioElements = document.querySelectorAll(".audio-element");
 
     document.addEventListener("DOMContentLoaded", function() {
-        for (let i = 0; i < 10; i++) { // Adjust the number of scattered images
+        for (let i = 0; i < 10; i++) {
             scatterImage();
         }
-        
-        // Change background color every minute (60,000 milliseconds)
-        setInterval(changeBackgroundColor, 60);
 
-        // Initial background color change
+        const songs = [
+            { src: "Adolf Hitler sings Skibidi fortnite.mp4", type: "audio/mp4" },
+            { src: "Chipi Chipi Chapa Chapa (Adolf Hitler).mp4", type: "audio/mp4" },
+            { src: "Adolf Hitler Becomes A sigma (realll  ).mp4", type: "audio/mp4" }
+        ];
+
+        const audioContainer = document.getElementById("audio-container");
+
+        audioContainer.innerHTML += `
+            <div class="audio-cube">
+                <div class="audio-cube-inner">
+                    <div class="audio-cube-face"></div>
+                    <div class="audio-cube-face"></div>
+                    <div class="audio-cube-face"></div>
+                    <div class="audio-cube-face"></div>
+                    <div class="audio-cube-face"></div>
+                    <div class="audio-cube-face"></div>
+                </div>
+            </div>
+        `;
+
+        songs.forEach((song, index) => {
+            const audioElement = document.createElement("audio");
+            audioElement.classList.add("audio-element");
+            audioElement.controls = true;
+            audioElement.src = song.src;
+            audioElement.type = song.type;
+            audioElement.addEventListener("ended", playNextSong);
+
+            audioContainer.appendChild(audioElement);
+        });
+
+        startFlickeringAndShaking(audioElements[0]);
+
+        setInterval(changeBackgroundColor, 1);
         changeBackgroundColor();
     });
 </script>
 
-<div id="audio-container">
-    <img id="audio-image" src="Adolf-Hitler-1933.webp" alt="Audio Image">
-    <audio id="audio-player" controls onplay="startFlickeringAndShaking()" onpause="stopFlickeringAndShaking()">
-        <source src="Adolf Hitler sings Skibidi fortnite.mp4" type="audio/mp3">
-        Your browser does not support the audio element.
-    </audio>
-</div>
+<img src="Adolf-Hitler-1933.webp" width="350" height="350"> 
+<div id="audio-container"></div>
 
 </body>
 </html>
