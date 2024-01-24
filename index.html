@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player with Dynamic Background Color</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Hide overflow for scattered images */
+            transition: transform 0.2s ease, background-color 1s ease; /* Smooth transition for screen shake and background color change */
+        }
+
+        #audio-container {
+            text-align: center;
+        }
+
+        #audio-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 5px solid #3498db; /* Cool colorful border */
+            object-fit: cover;
+        }
+
+        #audio-player {
+            width: 100%;
+            max-width: 500px; /* Adjust the max-width as needed */
+        }
+
+        /* Increase the size of audio controls */
+        #audio-player::-webkit-media-controls {
+            width: 100%;
+            max-width: 600px; /* Adjust the max-width as needed */
+        }
+
+        /* Additional styles for scattered images */
+        .scattered-image {
+            position: absolute;
+            width: 50px; /* Adjust the size of scattered images */
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #3498db; /* Cool colorful border */
+            object-fit: cover;
+            opacity: 0.7; /* Initial opacity */
+            transition: opacity 0.5s ease; /* Smooth transition for flickering effect */
+        }
+
+        /* Flickering effect class */
+        .flicker {
+            opacity: 0 !important;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    function changeBackgroundColor() {
+        // Generate a random color in hexadecimal format
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+
+        // Apply the random color to the body background
+        document.body.style.backgroundColor = randomColor;
+    }
+
+    function scatterImage() {
+        const image = document.createElement("img");
+        image.src = "Adolf-Hitler-1933.webp";
+        image.classList.add("scattered-image");
+
+        const randomX = Math.random() * window.innerWidth;
+        const randomY = Math.random() * window.innerHeight;
+
+        image.style.left = `${randomX}px`;
+        image.style.top = `${randomY}px`;
+
+        document.body.appendChild(image);
+        scatteredImages.push(image);
+    }
+
+    function startFlickeringAndShaking() {
+        flickerInterval = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * scatteredImages.length);
+            const flickerImage = scatteredImages[randomIndex];
+
+            flickerImage.classList.add("flicker");
+            setTimeout(() => flickerImage.classList.remove("flicker"), 200);
+        }, 1000); // Flicker every second
+
+        shakeInterval = setInterval(shakeScreen, 200); // Shake screen aggressively every 0.2 seconds
+    }
+
+    function stopFlickeringAndShaking() {
+        clearInterval(flickerInterval);
+        clearInterval(shakeInterval);
+        resetScreen();
+    }
+
+    function shakeScreen() {
+        const shakeMagnitude = 20;
+        const shakeDirection = Math.random() > 0.5 ? 1 : -1;
+        const translateY = shakeMagnitude * shakeDirection;
+
+        document.body.style.transform = `translateY(${translateY}px)`;
+    }
+
+    function resetScreen() {
+        document.body.style.transform = 'translateY(0)';
+    }
+
+    const scatteredImages = [];
+    let shakeInterval, flickerInterval;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        for (let i = 0; i < 10; i++) { // Adjust the number of scattered images
+            scatterImage();
+        }
+        
+        // Change background color every minute (60,000 milliseconds)
+        setInterval(changeBackgroundColor, 60);
+
+        // Initial background color change
+        changeBackgroundColor();
+    });
+</script>
+
+<div id="audio-container">
+    <img id="audio-image" src="Adolf-Hitler-1933.webp" alt="Audio Image">
+    <audio id="audio-player" controls onplay="startFlickeringAndShaking()" onpause="stopFlickeringAndShaking()">
+        <source src="Adolf Hitler sings Skibidi fortnite.mp4" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+
+</body>
+</html>
